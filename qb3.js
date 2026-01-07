@@ -24,6 +24,9 @@ var qParam;
 var canvas;
 var cx;
 var timerNo;
+var NofHis;
+var afterEffectInterval;
+var drawCount;
 
 // 画面上のスライドバーを動かされた時
 function changeQparam(value){
@@ -53,12 +56,27 @@ function qBall(image, radius, ix, iy, ivx, ivy){
 	this.y = iy;
 	this.vx = ivx;
 	this.vy = ivy;
+	// 残像用のarray
+	this.history = new Array(NofHis);
+	this.history[0] = {x: ix, y: iy};
+	for( let i=1; i<NofHis; i++) this.history[i] = null;	// nullで初期化
 };
 /* メソッド */
 /* 次の位置 */
 qBall.prototype.setNextPosition = function(){
+	// 次の位置へ
 	this.x += this.vx;
 	this.y += this.vy;
+
+	// drawCont=0のとき、
+	// historyを1つづつずらす
+	// historyの最新は先頭要素へセット
+	if (drawCount == 0){
+		for( let i=NofHis-1; i>0; i--){
+			this.history[i] = this.history[i-1];
+		}
+		this.history[0] = {x: this.x, y: this.y};
+	}
 };
 
 /* 反射 */
@@ -103,6 +121,19 @@ function collisionProcess ( bb, rb, radius ){
 	//衝突していないのでそのまま
 }
 
+/* 描画 */
+function drawQBall( qb ){
+	cx.globalAlpha = 1.0;
+	cx.drawImage( qb.element, qb.x, qb.y );
+	cx.globalAlpha = 0.2;
+	// 残像表示も毎回
+	for( let i=1; i<NofHis; i++){
+		if( qb.history[i] != null){
+			cx.drawImage( qb.element, qb.history[i].x  , qb.history[i].y );
+		}
+	}
+}
+
 function qbInit(){
 /* キャンバスの設定 */
 	canvas = document.getElementById("canvas1");
@@ -114,6 +145,10 @@ function qbInit(){
 	max_y = canvas.height - 50;		//跳ね返る場所y,50は仮
 	
 	var rinterval = 50; // 再描画間隔(ms)
+
+	NofHis = 10; // 残像の数（現物含む）
+	afterEffectInterval = 3;	// 残像を表示する間隔
+	drawCount = 0;		// 再描画の回数の初期値セット
 	
 	/* パラメータを画面から入れられるようにする */
 	//この中で、qParamもセットされる
@@ -143,7 +178,9 @@ function qbInit(){
 
 //描画ルーチン
 	timerNo = setInterval (function() {
-	
+
+		if (drawCount > afterEffectInterval) drawCount = 0;
+
 		//ボールの位置を１つ進める
 		bb.setNextPosition();
 		rb.setNextPosition();
@@ -162,12 +199,13 @@ function qbInit(){
 		bb.setNextVelocity();
 		rb.setNextVelocity();
 		
-		//再描画（最初よりこの位置の方が、空白時間が短い）
-		canvas.width = canvas.width;
+		//キャンバス内バッファのクリア
+		 cx.clearRect(0, 0, canvas.width, canvas.height)
 
 		//描画
-		cx.drawImage( bb.element, bb.x, bb.y );
-		cx.drawImage( rb.element, rb.x, rb.y );
+		drawQBall(bb);
+		drawQBall(rb);
+		drawCount++;
 		
 	}, rinterval);
 
