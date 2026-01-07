@@ -6,7 +6,7 @@
 
 <body>
 <div id="qbtitle">
-不思議なクーロンボール（残像版）
+不思議なクーロンボール
 <div id="qref"><a href="http://ja.wikipedia.org/wiki/%E3%82%B7%E3%83%A3%E3%83%AB%E3%83%AB%E3%83%BB%E3%83%89%E3%83%BB%E3%82%AF%E3%83%BC%E3%83%AD%E3%83%B3" target="_blank">シャルル-オーギュスタン・ド・クーロン</a>
 </div>
 </div>
@@ -32,6 +32,13 @@
 			<input type="range" name="qpm" min="-50" max="200" step="5" value="50" onchange="changeQparam(this.value)"/>
 			&nbsp;200<br>
 			<div id="vqp">50</div>
+		</td></tr>
+		<tr><td class="celem">
+			<b>●残像の長さ</b><br>
+			0&nbsp;
+			<input type="range" name="afterEft" min="0" max="20" step="1" value="15" oninput="changeAfterEft(this.value)" onchange="changeAfterEft(this.value)"/>
+			&nbsp;20<br>
+			<div id="afev">15</div>
 		</td></tr>
 		<tr><td id="setbtn">
 			<input type="button" name="setBtn" value="リスタート" onClick="ReSetParams()">

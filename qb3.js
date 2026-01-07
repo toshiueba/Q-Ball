@@ -36,6 +36,13 @@ function changeQparam(value){
 
 function setParams(){
 	qParam = document.cform.qpm.value * 100;
+	NofHis = document.cform.afterEft.value;
+}
+
+// 残像の長さを変更された
+function changeAfterEft(value){
+	NofHis = value;
+	document.getElementById("afev").innerHTML = value;
 }
 
 // 制御パネルのセットボタンが押された時
@@ -146,12 +153,12 @@ function qbInit(){
 	
 	var rinterval = 50; // 再描画間隔(ms)
 
-	NofHis = 10; // 残像の数（現物含む）
 	afterEffectInterval = 3;	// 残像を表示する間隔
 	drawCount = 0;		// 再描画の回数の初期値セット
 	
 	/* パラメータを画面から入れられるようにする */
 	//この中で、qParamもセットされる
+	// 残像の数 NofHisもこの中で
 	setParams();
 
 // ボールの生成
